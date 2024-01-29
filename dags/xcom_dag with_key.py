@@ -11,11 +11,15 @@ with DAG('xcom_dag_with_key', start_date = datetime(2022, 1,1), schedule = '@dai
         return 'iphone'
 
     @task
+    def lorie_task(ti = None):
+        ti.xcom_push(key = 'mobile_phone', value = 'galaxy')
+
+    @task
     def bryan_task(ti=None):
         #below command performs pulling the data from xcom DB and assigns derived value to the phone
-        phone = ti.xcom_pull(task_ids='peter_task', key='mobile_phone')
+        phone = ti.xcom_pull(task_ids=['peter_task', 'lorie_task'], key='mobile_phone')
         print(phone)
 
 #specify order of operations
 
-    peter_task() >> bryan_task()
+    peter_task() >> lorie_task() >> bryan_task()
